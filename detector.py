@@ -10,8 +10,6 @@ def inet_to_str(inet):
     
     
 def synFlood(input:str):
-    # must be in the same directory
-    # f = open(, 'rb')
     f = open(input, 'rb')
 
     pcap = dpkt.pcap.Reader(f)
@@ -79,8 +77,6 @@ def synFlood(input:str):
 
 
 def synAckFlood(input:str):
-    # must be in the same directory
-    # f = open('amp.TCP.reflection.SYNACK.pcap', 'rb')
     f = open(input, 'rb')
 
     pcap = dpkt.pcap.Reader(f)
@@ -136,15 +132,59 @@ def synAckFlood(input:str):
     return "No SynAck Flood detected\n"    
 
 
+
+
+def nullUDP(input:str):
+    f = open(input, 'rb')
+    pcap = dpkt.pcap.Reader(f)
+    
+    badUpdLength = 0
+    goodUpdLength = 0
+    
+    for num, (ts, buff) in  enumerate(pcap):
+        try:
+            eth = dpkt.ethernet.Ethernet(buff)
+        except:
+            continue
+        if eth.type != dpkt.ethernet.ETH_TYPE_IP:
+            continue
+        ip = eth.data
+
+        if ip.p != dpkt.ip.IP_PROTO_UDP:
+            continue
+
+        udp = ip.data
+        
+        if udp.ulen == 0:
+            badUpdLength +=1
+        else:
+            goodUpdLength +=1 
+            
+        if badUpdLength-goodUpdLength > 60:
+            return "Null UDP length. UDP lenght must be >0. Loop iterations failed after " + str(num) + " iterations.\n"
+   
+    return "No null UDP length detected\n"
+
+
 if __name__ == '__main__':
     print(synFlood("SYN.pcap"))
     print(synFlood('pkt.TCP.synflood.spoofed.pcap'))
     print(synFlood('part1.pcap'))
+    print(synFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
+    print(synFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
     
     print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
     print(synAckFlood('SYN.pcap'))
     print(synAckFlood('pkt.TCP.synflood.spoofed.pcap'))
     print(synAckFlood('part1.pcap'))
+    print(synAckFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
+    print(synAckFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
+    
+    print(nullUDP('pkt.UDP.null.pcapng'))
+    print(nullUDP('part1.pcap'))
+    print(nullUDP('SYN.pcap'))
+    print(nullUDP('pkt.TCP.synflood.spoofed.pcap'))
     
     
+
     
