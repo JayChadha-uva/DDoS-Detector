@@ -1,5 +1,7 @@
 import dpkt
+import datetime
 import socket
+from dpkt.compat import compat_ord
 
 # Function from dpkt examples.print_http_requests
 def inet_to_str(inet):
@@ -166,24 +168,60 @@ def nullUDP(input:str):
     return "No null UDP length detected\n"
 
 
+def icmpEcho(input:str):
+    f = open(input, 'rb')
+    pcap = dpkt.pcap.Reader(f)
+    
+    ipDst={}
+    start = 0
+    
+    for num, (ts, buff) in  enumerate(pcap):
+        if num == 0:
+            start = ts
+
+        try:
+            eth = dpkt.ethernet.Ethernet(buff)
+        except:
+            continue
+        if eth.type != dpkt.ethernet.ETH_TYPE_IP:
+            continue
+        ip = eth.data
+        
+        if isinstance(ip.data, dpkt.icmp.ICMP):
+            icmp = ip.data
+
+            if icmp.type == 8:
+                if inet_to_str(ip.dst) not in ipDst:
+                    ipDst[inet_to_str(ip.dst)] = 1
+                else:
+                    ipDst[inet_to_str(ip.dst)] = ipDst[inet_to_str(ip.dst)] + 1
+          
+                delta = ts - start
+                if inet_to_str(ip.dst) in ipDst and ipDst[inet_to_str(ip.dst)] > 60 and delta < 0.5:
+                    return "ICMP flood of type 8 (echo). "+ inet_to_str(ip.dst) + " flooded with echo requests. " + str(ipDst[inet_to_str(ip.dst)]) + " requests in " + str(delta) + " seconds.\n"
+
+    return "No ICMP flood detected\n"
+
 if __name__ == '__main__':
     print(synFlood("SYN.pcap"))
-    print(synFlood('pkt.TCP.synflood.spoofed.pcap'))
-    print(synFlood('part1.pcap'))
-    print(synFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
+    # print(synFlood('pkt.TCP.synflood.spoofed.pcap'))
+    # print(synFlood('part1.pcap'))
+    # print(synFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
     print(synFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
     
-    print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
+    # print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
     print(synAckFlood('SYN.pcap'))
-    print(synAckFlood('pkt.TCP.synflood.spoofed.pcap'))
-    print(synAckFlood('part1.pcap'))
-    print(synAckFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
-    print(synAckFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
+    # print(synAckFlood('pkt.TCP.synflood.spoofed.pcap'))
+    # print(synAckFlood('part1.pcap'))
+    # print(synAckFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
+    # print(synAckFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
     
-    print(nullUDP('pkt.UDP.null.pcapng'))
-    print(nullUDP('part1.pcap'))
+    # print(nullUDP('pkt.UDP.null.pcapng'))
+    # print(nullUDP('part1.pcap'))
     print(nullUDP('SYN.pcap'))
-    print(nullUDP('pkt.TCP.synflood.spoofed.pcap'))
+    # print(nullUDP('pkt.TCP.synflood.spoofed.pcap'))
+    
+    print(icmpEcho('pkt.ICMP.largeempty.pcap'))
     
     
 
