@@ -57,12 +57,12 @@ def synFlood(input:str):
                 ackDict.add(inet_to_str(ip.dst))  
                 
         if (synCounter - synAckCounter > 100 and synCounter - ackCounter > 100):
-            return "Syn flood detected - three way handshake could not be completed. " + str(num) + " loop iterations completed before detected\n"
+            return "Syn flood detected - three way handshake could not be completed. " + str(num) + " loop iterations completed before detected"
         
         if inet_to_str(ip.src) in ipSrc and ipSrc[inet_to_str(ip.src)] >60:
-            return "Syn Flood detected from IP " + inet_to_str(ip.src) + " - " + str(num) + " loop iterations completed before detected\n"
+            return "Syn Flood detected from IP " + inet_to_str(ip.src) + " - " + str(num) + " loop iterations completed before detected"
         
-    return "No Syn Flood detected\n"
+    return "No Syn Flood detected"
 
 def synAckFlood(input:str):
     f = open(input, 'rb')
@@ -96,7 +96,7 @@ def synAckFlood(input:str):
                     temp = ipDst[inet_to_str(ip.dst)]
                 
                 if  synAckSeen[inet_to_str(ip.dst)] - temp > 60:
-                    return "Syn Ack Flood detected flooding destination " + inet_to_str(ip.dst) + " - " + str(num) + " loop iterations completed before detected\n"         
+                    return "Syn Ack Flood detected flooding destination " + inet_to_str(ip.dst) + " - " + str(num) + " loop iterations completed before detected"         
                 
         elif (not (tcp.flags & dpkt.tcp.TH_ACK) and (tcp.flags & dpkt.tcp.TH_SYN)):
             synCounter += 1
@@ -106,7 +106,7 @@ def synAckFlood(input:str):
             else:
                 ipDst[inet_to_str(ip.dst)] = ipDst[inet_to_str(ip.dst)] + 1
                               
-    return "No SynAck Flood detected\n"    
+    return "No SynAck Flood detected"    
 
 def nullUDP(input:str):
     f = open(input, 'rb')
@@ -132,9 +132,9 @@ def nullUDP(input:str):
             goodUpdLength +=1 
             
         if badUpdLength-goodUpdLength > 60:
-            return "Null UDP length. UDP lenght must be >0. Loop iterations failed after " + str(num) + " iterations.\n"
+            return "Null UDP length. UDP lenght must be >0. Loop iterations failed after " + str(num) + " iterations."
    
-    return "No null UDP length detected\n"
+    return "No null UDP length detected"
 
 def icmpEcho(input:str):
     f = open(input, 'rb')
@@ -164,19 +164,38 @@ def icmpEcho(input:str):
           
                 delta = ts - start
                 if inet_to_str(ip.dst) in ipDst and ipDst[inet_to_str(ip.dst)] > 60 and delta < 0.5:
-                    return "ICMP flood of type 8 (echo). "+ inet_to_str(ip.dst) + " flooded with echo requests. " + str(ipDst[inet_to_str(ip.dst)]) + " requests in " + str(delta) + " seconds.\n"
+                    return "ICMP flood of type 8 (echo). "+ inet_to_str(ip.dst) + " flooded with echo requests. " + str(num) + " loop iterations before detected, " + str(delta) + " seconds."
 
-    return "No ICMP echo flood detected\n"
+    return "No ICMP echo flood detected"
+
+def runTests(input:str):
+    
+    print("Tests results for: " + input)
+    print("----------------------------")
+    print(synFlood(input))
+    print(synAckFlood(input))
+    print(nullUDP(input))
+    print(icmpEcho(input))
+    print("\n")
+    
 
 if __name__ == '__main__':
-    print(synFlood("SYN.pcap"))
+    
+    print("\n")
+    runTests("SYN.pcap")
+    
+    runTests("pkt.TCP.synflood.spoofed.pcap")
+    runTests("part1.pcap")
+    runTests("pkt.ICMP.largeempty.pcap")
+    
+    # print(synFlood("SYN.pcap"))
     # print(synFlood('pkt.TCP.synflood.spoofed.pcap'))
     # print(synFlood('part1.pcap'))
     # print(synFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
-    print(synFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
+    # print(synFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
     
     # print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
-    print(synAckFlood('SYN.pcap'))
+    # print(synAckFlood('SYN.pcap'))
     # print(synAckFlood('pkt.TCP.synflood.spoofed.pcap'))
     # print(synAckFlood('part1.pcap'))
     # print(synAckFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
@@ -184,9 +203,10 @@ if __name__ == '__main__':
     
     # print(nullUDP('pkt.UDP.null.pcapng'))
     # print(nullUDP('part1.pcap'))
-    print(nullUDP('SYN.pcap'))
+    # print(nullUDP('SYN.pcap'))
     # print(nullUDP('pkt.TCP.synflood.spoofed.pcap'))
     
-    print(icmpEcho('pkt.ICMP.largeempty.pcap'))
-    print(icmpEcho('SYN.pcap'))
+    # print(icmpEcho('pkt.ICMP.largeempty.pcap'))
+    # print(icmpEcho('SYN.pcap'))
+    # print(icmpEcho('part1.pcap'))
     
