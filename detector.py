@@ -187,26 +187,9 @@ if __name__ == '__main__':
     runTests("pkt.TCP.synflood.spoofed.pcap")
     runTests("part1.pcap")
     runTests("pkt.ICMP.largeempty.pcap")
+    runTests('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng')
+    runTests('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng')
     
-    # print(synFlood("SYN.pcap"))
-    # print(synFlood('pkt.TCP.synflood.spoofed.pcap'))
-    # print(synFlood('part1.pcap'))
-    # print(synFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
-    # print(synFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
-    
-    # print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
-    # print(synAckFlood('SYN.pcap'))
-    # print(synAckFlood('pkt.TCP.synflood.spoofed.pcap'))
-    # print(synAckFlood('part1.pcap'))
-    # print(synAckFlood('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng'))
-    # print(synAckFlood('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng'))
-    
-    # print(nullUDP('pkt.UDP.null.pcapng'))
-    # print(nullUDP('part1.pcap'))
-    # print(nullUDP('SYN.pcap'))
-    # print(nullUDP('pkt.TCP.synflood.spoofed.pcap'))
-    
-    # print(icmpEcho('pkt.ICMP.largeempty.pcap'))
-    # print(icmpEcho('SYN.pcap'))
-    # print(icmpEcho('part1.pcap'))
+    print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
+    print(nullUDP('pkt.UDP.null.pcapng'))
     
