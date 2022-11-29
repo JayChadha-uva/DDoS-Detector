@@ -126,7 +126,8 @@ def nullUDP(input:str):
             continue
         udp = ip.data
         
-        if udp.ulen == 0:
+        
+        if type(udp)!=bytes and udp.ulen == 0:
             badUpdLength +=1
         else:
             goodUpdLength +=1 
@@ -183,7 +184,6 @@ if __name__ == '__main__':
     
     print("\n")
     runTests("SYN.pcap")
-    
     runTests("pkt.TCP.synflood.spoofed.pcap")
     runTests("part1.pcap")
     runTests("pkt.ICMP.largeempty.pcap")
