@@ -189,7 +189,6 @@ if __name__ == '__main__':
     runTests("pkt.ICMP.largeempty.pcap")
     runTests('amp.TCP.syn.optionallyACK.optionallysamePort.pcapng')
     runTests('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng')
-    
-    print(synAckFlood('amp.TCP.reflection.SYNACK.pcap'))
-    print(nullUDP('pkt.UDP.null.pcapng'))
+    runTests('amp.TCP.reflection.SYNACK.pcap')
+    runTests('pkt.UDP.null.pcapng')
     
