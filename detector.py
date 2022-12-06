@@ -1,5 +1,5 @@
-import dpkt
 import socket
+import dpkt
 
 def inet_to_str(inet):
     try:
@@ -21,6 +21,8 @@ def synFlood(input:str):
     ackCounter = 0
     
     for num, (ts, buff) in  enumerate(pcap):
+        if num == 0:
+            start = ts
         try:
             eth = dpkt.ethernet.Ethernet(buff)
         except:
@@ -56,11 +58,12 @@ def synFlood(input:str):
                 ackCounter +=1
                 ackDict.add(inet_to_str(ip.dst))  
                 
+        delta = ts - start
         if (synCounter - synAckCounter > 100 and synCounter - ackCounter > 100):
-            return "Syn flood detected - three way handshake could not be completed. " + str(num) + " loop iterations completed before detected"
+            return "Syn flood detected - three way handshake could not be completed." + " - " + str(delta) + " seconds."
         
         if inet_to_str(ip.src) in ipSrc and ipSrc[inet_to_str(ip.src)] >60:
-            return "Syn Flood detected from IP " + inet_to_str(ip.src) + " - " + str(num) + " loop iterations completed before detected"
+            return "Syn Flood detected from IP " + inet_to_str(ip.src) + " - " + str(delta) + " seconds."
         
     return "No Syn Flood detected"
 
@@ -73,6 +76,8 @@ def synAckFlood(input:str):
     synCounter = 0
     
     for num, (ts, buff) in  enumerate(pcap):
+        if num == 0:
+            start = ts
         try:
             eth = dpkt.ethernet.Ethernet(buff)
         except:
@@ -96,7 +101,8 @@ def synAckFlood(input:str):
                     temp = ipDst[inet_to_str(ip.dst)]
                 
                 if  synAckSeen[inet_to_str(ip.dst)] - temp > 60:
-                    return "Syn Ack Flood detected flooding destination " + inet_to_str(ip.dst) + " - " + str(num) + " loop iterations completed before detected"         
+                    delta = ts - start
+                    return "Syn Ack Flood detected flooding destination " + inet_to_str(ip.dst) + " - " + str(delta) + " seconds."       
                 
         elif (not (tcp.flags & dpkt.tcp.TH_ACK) and (tcp.flags & dpkt.tcp.TH_SYN)):
             synCounter += 1
@@ -115,6 +121,8 @@ def nullUDP(input:str):
     goodUpdLength = 0
     
     for num, (ts, buff) in  enumerate(pcap):
+        if num == 0:
+            start = ts
         try:
             eth = dpkt.ethernet.Ethernet(buff)
         except:
@@ -126,16 +134,16 @@ def nullUDP(input:str):
             continue
         udp = ip.data
         
-        
         if type(udp)!=bytes and udp.ulen == 0:
             badUpdLength +=1
         else:
             goodUpdLength +=1 
             
         if badUpdLength-goodUpdLength > 60:
-            return "Null UDP length. UDP lenght must be >0. Loop iterations failed after " + str(num) + " iterations."
+            delta = ts - start
+            return "Null UDP length. UDP length must be >0. - " + str(delta) + " seconds."
    
-    return "No null UDP length detected"
+    return "No null UDP length flood detected"
 
 def icmpEcho(input:str):
     f = open(input, 'rb')
@@ -164,24 +172,54 @@ def icmpEcho(input:str):
                     ipDst[inet_to_str(ip.dst)] = ipDst[inet_to_str(ip.dst)] + 1
           
                 delta = ts - start
-                if inet_to_str(ip.dst) in ipDst and ipDst[inet_to_str(ip.dst)] > 60 and delta < 0.5:
-                    return "ICMP flood of type 8 (echo). "+ inet_to_str(ip.dst) + " flooded with echo requests. " + str(num) + " loop iterations before detected, " + str(delta) + " seconds."
-
+                if inet_to_str(ip.dst) in ipDst and ipDst[inet_to_str(ip.dst)] > 60 and delta < 0.1:
+                    return "ICMP flood of type 8 (echo). "+ inet_to_str(ip.dst) + " flooded with echo requests. - " + str(delta) + " seconds."
+                
     return "No ICMP echo flood detected"
 
-def runTests(input:str):
+def sameUDPLength(input:str):
+    f = open(input, 'rb')
+    pcap = dpkt.pcap.Reader(f)
+
+    udpLength = {}
     
+    for num, (ts, buff) in  enumerate(pcap):
+        if num == 0:
+            start = ts
+        try:
+            eth = dpkt.ethernet.Ethernet(buff)
+        except:
+            continue
+        if eth.type != dpkt.ethernet.ETH_TYPE_IP:
+            continue
+        ip = eth.data
+        if ip.p != dpkt.ip.IP_PROTO_UDP:
+            continue
+        udp = ip.data  
+        
+        if type(udp)!=bytes and udp.ulen in udpLength:
+            udpLength[udp.ulen] = udpLength[udp.ulen] +1
+            delta = ts - start
+            if udpLength[udp.ulen] == 200 and num<600 and delta <0.1:
+                
+                return "UDP flood of same length detected. " + inet_to_str(ip.dst) + " flooded with same UDP length packets. - "+ str(delta) + " seconds."
+        elif type(udp)!=bytes:
+            udpLength[udp.ulen] = 1
+   
+    return "No same UDP length flood detected"
+
+def runTests(input:str):
     print("Tests results for: " + input)
     print("----------------------------")
     print(synFlood(input))
     print(synAckFlood(input))
     print(nullUDP(input))
+    print(sameUDPLength(input))
     print(icmpEcho(input))
     print("\n")
     
 
 if __name__ == '__main__':
-    
     print("\n")
     runTests("SYN.pcap")
     runTests("pkt.TCP.synflood.spoofed.pcap")
@@ -191,4 +229,5 @@ if __name__ == '__main__':
     runTests('pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng')
     runTests('amp.TCP.reflection.SYNACK.pcap')
     runTests('pkt.UDP.null.pcapng')
+    runTests('pkt.UDP.rdm.fixedlength.pcapng')
     
