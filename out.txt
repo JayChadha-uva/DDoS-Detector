@@ -1,0 +1,110 @@
+Tests results for: SYN.pcap
+---------------------------------
+SYN Flood detected from IP 10.0.0.2 - 0.8451359272003174 seconds.
+SYN ACK Flood detected flooding destination 10.0.0.2 - 0.41725993156433105 seconds.
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: pkt.TCP.synflood.spoofed.pcap
+---------------------------------
+SYN flood detected - three way handshake could not be completed. - 0.05834507942199707 seconds.
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: part1.pcap
+---------------------------------
+No SYN Flood detected
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: pkt.ICMP.largeempty.pcap
+---------------------------------
+No SYN Flood detected
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+ICMP flood of type 8 (echo). 10.10.10.10 flooded with echo requests. - 0.07700896263122559 seconds.
+
+
+Tests results for: amp.TCP.syn.optionallyACK.optionallysamePort.pcapng
+---------------------------------
+SYN Flood detected from IP 136.243.174.154 - 499.9998950958252 seconds.
+SYN ACK Flood detected flooding destination 10.10.10.10 - 402.1390070915222 seconds.
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: pkt.TCP.DOMINATE.syn.ecn.cwr.pcapng
+---------------------------------
+No SYN Flood detected
+No SYN ACK Flood detected
+SYN CWR flood detected - three way handshake could not be completed. - 33.909258127212524 seconds.
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: amp.TCP.reflection.SYNACK.pcap
+---------------------------------
+No SYN Flood detected
+SYN ACK Flood detected flooding destination 10.10.10.10 - 0.0016078948974609375 seconds.
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: pkt.UDP.null.pcapng
+---------------------------------
+No SYN Flood detected
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+Null UDP length. UDP length must be >0. - 0.04508781433105469 seconds.
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: pkt.UDP.rdm.fixedlength.pcapng
+---------------------------------
+No SYN Flood detected
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+No null UDP length flood detected
+UDP flood of same length detected. 10.10.10.10 flooded with same UDP length packets. - 0.014864921569824219 seconds.
+No ICMP echo flood detected
+
+
+Tests results for: amp.UDP.UBNT.src10001.pcapng
+---------------------------------
+No SYN Flood detected
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
+Tests results for: amp.dns.RRSIG.fragmented.pcap
+---------------------------------
+SYN flood detected - three way handshake could not be completed. - 21.15046191215515 seconds.
+No SYN ACK Flood detected
+No SYN CWR Flood detected
+No null UDP length flood detected
+No same UDP length flood detected
+No ICMP echo flood detected
+
+
