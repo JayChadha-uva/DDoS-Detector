@@ -280,7 +280,6 @@ def runTests(input:str):
     print(sameUDPLength(input))
     print(icmpEcho(input))
     print("\n")
-    
 
 if __name__ == '__main__':
     with open('out.txt', 'w') as f:
@@ -296,4 +295,10 @@ if __name__ == '__main__':
             runTests('pkt.UDP.rdm.fixedlength.pcapng')
             runTests('amp.UDP.UBNT.src10001.pcapng')
             runTests('amp.dns.RRSIG.fragmented.pcap')
+            runTests('amp.UDP.manyprotocols.pcapng')
+            runTests('amp.UDP.bacnet.IOT.37810.pcapng')
+            runTests('amp.UDP.IOT.port37810.JSON.pcap')
+            runTests('amp.UDP.DNSANY.pcap')     
+    
+    print("\n Finished!")          
     
